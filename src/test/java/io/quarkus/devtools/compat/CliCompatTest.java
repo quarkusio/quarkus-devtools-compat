@@ -9,6 +9,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.junit.jupiter.api.io.TempDir;
 import org.paukov.combinatorics3.Generator;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -36,7 +39,8 @@ import static org.hamcrest.io.FileMatchers.aFileWithSize;
 
 public class CliCompatTest {
 
-    public static final Path STORAGE_FILE = Path.of("./storage/cli-compat-test.json");
+    private static final Path STORAGE_FILE = Path.of("./storage/cli-compat-test.json");
+    private static final String ECOSYSTEM_CI = "ECOSYSTEM_CI";
     private static WebClient client = WebClient.create(Vertx.vertx());
     private static Storage storage;
     private static Set<Combination> tested = new HashSet<>();
@@ -55,28 +59,40 @@ public class CliCompatTest {
         }
     }
     public static void store() throws IOException {
+        if(isEcosystemCI()) {
+            return;
+        }
         Files.createDirectories(Path.of("./storage"));
         Files.writeString(STORAGE_FILE, JsonObject.mapFrom(storage).encodePrettily());
     }
 
     @TestFactory
-    Stream<DynamicTest> testCli(@TempDir Path tempDir) throws IOException {
-        final List<String> versions = client.getAbs("https://registry.quarkus.io/client/platforms/all")
-            .send()
-            .onItem().transform(HttpResponse::bodyAsJsonObject)
-            .onItem().transform(CliCompatTest::extractVersions)
-            .await().indefinitely();
+    @EnabledIfEnvironmentVariable(named = ECOSYSTEM_CI, matches = "true")
+    Stream<DynamicTest> testCliSnapshot(@TempDir Path tempDir) throws IOException {
+        final List<String> versions = fetchAllVersionsFromRegistry();
+        return versions.stream()
+            .flatMap(v -> testSnapshot(tempDir, versions))
+            .limit(10);
+    }
 
+    @TestFactory
+    @DisabledIfEnvironmentVariable(named = ECOSYSTEM_CI, matches = "true")
+    Stream<DynamicTest> testCliReleases(@TempDir Path tempDir) throws IOException {
+        final List<String> versions = fetchAllVersionsFromRegistry();
         return versions.stream()
             .flatMap(v -> testVersions(tempDir, versions))
             .limit(10);
     }
 
     private static Storage readStorage() throws IOException {
-        if (!Files.isRegularFile(STORAGE_FILE)) {
+        if (isEcosystemCI() || !Files.isRegularFile(STORAGE_FILE)) {
             return new Storage();
         }
         return (new JsonObject(Files.readString(STORAGE_FILE))).mapTo(Storage.class);
+    }
+
+    private static boolean isEcosystemCI() {
+        return Objects.equals(System.getenv(ECOSYSTEM_CI), "true");
     }
 
     private static List<String> extractVersions(JsonObject o) {
@@ -89,6 +105,13 @@ public class CliCompatTest {
             .map(j -> j.getString("version"))
             .filter(v -> v.contains("Final"))
             .collect(Collectors.toList());
+    }
+
+    private Stream<DynamicTest> testSnapshot(Path tempDir, List<String> allVersions) {
+        return Generator.cartesianProduct(List.of("999-SNAPSHOT"), allVersions).stream()
+            .flatMap(i -> Stream.of(new Combination(i.get(0), i.get(1)), new Combination(i.get(1), i.get(0))))
+            .filter(not(storage.verified::contains))
+            .map(c -> testCombination(tempDir, c));
     }
 
     private Stream<DynamicTest> testVersions(Path tempDir, List<String> allVersions) {
@@ -163,6 +186,14 @@ public class CliCompatTest {
             .exitValue(0)
             .readOutput(true);
 
+    }
+
+    private List<String> fetchAllVersionsFromRegistry() {
+        return client.getAbs("https://registry.quarkus.io/client/platforms/all")
+            .send()
+            .onItem().transform(HttpResponse::bodyAsJsonObject)
+            .onItem().transform(CliCompatTest::extractVersions)
+            .await().indefinitely();
     }
 
     static record Storage(Set<Combination> verified, Set<Combination> ignored, Set<Combination> failing) {

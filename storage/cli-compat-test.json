@@ -16,6 +16,9 @@
     "platform" : "2.5.2.Final"
   }, {
     "cli" : "2.8.0.Final",
+    "platform" : "2.2.4.Final"
+  }, {
+    "cli" : "2.8.0.Final",
     "platform" : "2.5.3.Final"
   }, {
     "cli" : "2.8.1.Final",
