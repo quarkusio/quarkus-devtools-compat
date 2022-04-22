@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -e
+
+ECOSYSTEM_CI=true mvn test
