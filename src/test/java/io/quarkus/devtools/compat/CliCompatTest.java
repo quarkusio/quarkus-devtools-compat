@@ -21,12 +21,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.function.Predicate.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -39,13 +39,10 @@ public class CliCompatTest {
     public static final Path STORAGE_FILE = Path.of("./storage/cli-compat-test.json");
     private static WebClient client = WebClient.create(Vertx.vertx());
     private static Storage storage;
-    private static Set<Combination> verifiedCombinations = new HashSet<>();
 
     @BeforeAll
     public static void beforeAll() throws IOException {
         storage = readStorage();
-        System.out.println("Already verified cli versions:\n" +String.join(",", storage.cliVersions));
-        System.out.println("Already verified platform versions:\n" +String.join(",", storage.platformVersions));
     }
 
     public void store() throws IOException {
@@ -62,10 +59,8 @@ public class CliCompatTest {
             .await().indefinitely();
 
         return versions.stream()
-            .filter(v -> !(storage.platformVersions.contains(v) && storage.cliVersions.contains(v)))
-            .limit(1)
             .flatMap(v -> testVersion(tempDir, versions, v))
-            .filter(Objects::nonNull);
+            .limit(10);
     }
 
     private static Storage readStorage() throws IOException {
@@ -91,41 +86,29 @@ public class CliCompatTest {
         Set<Combination> platformTests = Generator.cartesianProduct(List.of(version), allVersions).stream()
             .map(i -> new Combination(i.get(0), i.get(1)))
             .collect(Collectors.toCollection(LinkedHashSet::new));
-        DynamicTest platformTest = null;
-        if(!storage.platformVersions.contains(version)) {
-            platformTest = DynamicTest.dynamicTest("Testing Quarkus Platform " + version , () -> {
-                testCombinations(tempDir, platformTests);
-                storage.platformVersions.add(version);
-                store();
-            });
-        }
-
         Set<Combination> cliTests = platformTests.stream().map(c -> new Combination(c.cli, c.platform)).collect(Collectors.toCollection(LinkedHashSet::new));
-        DynamicTest cliTest = null;
-        if(!storage.cliVersions.contains(version)) {
-            cliTest = DynamicTest.dynamicTest("Testing Quarkus CLI " + version , () -> {
-                testCombinations(tempDir, cliTests);
-                storage.cliVersions.add(version);
-                store();
-            });
-        }
 
-        return Stream.of(platformTest, cliTest);
+        return Stream.concat(platformTests.stream(), cliTests.stream())
+            .filter(not(storage.verifiedCombinations::contains))
+            .map(c -> testCombination(tempDir, c));
+
     }
 
-    private void testCombinations(Path tempDir, Set<Combination> test) throws IOException, InterruptedException, TimeoutException {
-        for (Combination c : test) {
-            if (storage.ignoredCombinations.contains(c)) {
-                System.out.println("This combination is set to be ignored: " + c);
-                continue;
-            }
-            if (verifiedCombinations.contains(c)) {
-                System.out.println("This combination has already been verified: " + c);
-                continue;
-            }
-            testCLI(tempDir.resolve("cli_" + c.cli + "-platform_" + c.platform), c);
-            verifiedCombinations.add(c);
-        }
+    private DynamicTest testCombination(Path tempDir, Combination c) {
+       return DynamicTest.dynamicTest("Test CLI " + c.cli + " with Platform " + c.platform, () -> {
+           if (storage.ignoredCombinations.contains(c)) {
+               System.out.println("This combination is set to be ignored: " + c);
+               return;
+           }
+           if (storage.verifiedCombinations.contains(c)) {
+               System.out.println("This combination has already been verified: " + c);
+               return;
+           }
+           testCLI(tempDir.resolve("cli_" + c.cli + "-platform_" + c.platform), c);
+           storage.verifiedCombinations.add(c);
+           store();
+       });
+
     }
 
     public void testCLI(Path tempDir, Combination combination) throws IOException, InterruptedException, TimeoutException {
@@ -177,9 +160,9 @@ public class CliCompatTest {
 
     }
 
-    static record Storage(Set<String> cliVersions, Set<String> platformVersions, Set<Combination> ignoredCombinations) {
+    static record Storage(Set<Combination> verifiedCombinations, Set<Combination> ignoredCombinations) {
         Storage() {
-            this(new HashSet<>(), new HashSet<>(), new HashSet<>());
+            this(new HashSet<>(), new HashSet<>());
         }
     }
 
