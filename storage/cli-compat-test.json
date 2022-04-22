@@ -60,6 +60,9 @@
     "cli" : "2.6.2.Final",
     "platform" : "2.7.5.Final"
   }, {
+    "cli" : "2.6.2.Final",
+    "platform" : "2.1.1.Final"
+  }, {
     "cli" : "2.8.0.Final",
     "platform" : "2.1.2.Final"
   }, {
@@ -135,6 +138,9 @@
     "cli" : "2.7.0.Final",
     "platform" : "2.8.0.Final"
   }, {
+    "cli" : "2.6.2.Final",
+    "platform" : "2.1.0.Final"
+  }, {
     "cli" : "2.7.1.Final",
     "platform" : "2.1.2.Final"
   }, {
@@ -372,6 +378,9 @@
     "cli" : "2.7.0.Final",
     "platform" : "2.1.2.Final"
   }, {
+    "cli" : "2.6.2.Final",
+    "platform" : "2.1.3.Final"
+  }, {
     "cli" : "2.8.1.Final",
     "platform" : "2.1.1.Final"
   }, {
@@ -428,6 +437,9 @@
   }, {
     "cli" : "2.7.5.Final",
     "platform" : "2.6.2.Final"
+  }, {
+    "cli" : "2.6.2.Final",
+    "platform" : "2.1.2.Final"
   }, {
     "cli" : "2.6.2.Final",
     "platform" : "2.7.4.Final"
@@ -955,5 +967,17 @@
     "cli" : "2.6.1.Final",
     "platform" : "2.8.0.Final"
   } ],
-  "failing" : [ ]
+  "failing" : [ {
+    "cli" : "2.6.1.Final",
+    "platform" : "2.7.5.Final"
+  }, {
+    "cli" : "2.6.1.Final",
+    "platform" : "2.7.4.Final"
+  }, {
+    "cli" : "2.6.1.Final",
+    "platform" : "2.7.2.Final"
+  }, {
+    "cli" : "2.6.1.Final",
+    "platform" : "2.7.3.Final"
+  } ]
 }
