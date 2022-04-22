@@ -1,5 +1,5 @@
 {
-  "cliVersions" : [ "2.8.0.Final" ],
+  "cliVersions" : [ "2.8.1.Final", "2.8.0.Final" ],
   "platformVersions" : [ ],
   "ignoredCombinations" : [ ]
 }
