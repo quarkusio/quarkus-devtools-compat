@@ -1,0 +1,55 @@
+name: Releases compatibility tests
+
+on:
+  schedule:
+    - cron:  '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Get Date
+        id: get-date
+        run: |
+          echo "::set-output name=date::$(/bin/date -u "+%Y-%m")"
+        shell: bash
+      - name: Cache Maven Repository
+        id: cache-maven
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          # refresh cache every month to avoid unlimited growth
+          key: maven-repo-${{ runner.os }}-${{ steps.get-date.outputs.date }}
+
+      - name: Test with Maven
+        run: mvn test
+
+      - name: Push storage
+        if: always()
+        run: |
+          git config --local user.email "quarkusbot@xam.dk"
+          git config --local user.name "Quarkus Bot"
+          git add ./storage/cli-compat-test.json
+          git commit --quiet -m "Commit test storage"
+          git push --quiet
+          echo "Commited test storage"
+
+      - name: Report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Maven Tests
+          path: target/surefire-reports/*.xml
+          reporter: java-junit
+          fail-on-error: true
