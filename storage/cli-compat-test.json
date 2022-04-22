@@ -49,10 +49,10 @@
     "cli" : "2.5.0.Final"
   } ],
   "ignoredCombinations" : [ {
-    "platform" : "2.6.1.Final",
-    "cli" : "2.8.1.Final"
+    "platform" : "2.8.1.Final",
+    "cli" : "2.6.1.Final"
   }, {
-    "platform" : "2.6.1.Final",
-    "cli" : "2.8.0.Final"
+    "platform" : "2.8.0.Final",
+    "cli" : "2.6.1.Final"
   } ]
 }
