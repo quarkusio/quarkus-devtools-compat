@@ -59,7 +59,7 @@ public class CliCompatTest {
             .await().indefinitely();
 
         return versions.stream()
-            .flatMap(v -> testVersion(tempDir, versions, v))
+            .flatMap(v -> testVersions(tempDir, versions))
             .limit(10);
     }
 
@@ -82,16 +82,11 @@ public class CliCompatTest {
             .collect(Collectors.toList());
     }
 
-    private Stream<DynamicTest> testVersion(Path tempDir, List<String> allVersions, String version) {
-        Set<Combination> platformTests = Generator.cartesianProduct(List.of(version), allVersions).stream()
+    private Stream<DynamicTest> testVersions(Path tempDir, List<String> allVersions) {
+        return Generator.cartesianProduct(allVersions, allVersions).stream()
             .map(i -> new Combination(i.get(0), i.get(1)))
-            .collect(Collectors.toCollection(LinkedHashSet::new));
-        Set<Combination> cliTests = platformTests.stream().map(c -> new Combination(c.cli, c.platform)).collect(Collectors.toCollection(LinkedHashSet::new));
-
-        return Stream.concat(platformTests.stream(), cliTests.stream())
             .filter(not(storage.verifiedCombinations::contains))
             .map(c -> testCombination(tempDir, c));
-
     }
 
     private DynamicTest testCombination(Path tempDir, Combination c) {
