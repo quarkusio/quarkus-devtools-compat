@@ -5,6 +5,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
 import io.vertx.mutiny.ext.web.client.WebClient;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
@@ -19,7 +20,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
@@ -39,13 +39,22 @@ public class CliCompatTest {
     public static final Path STORAGE_FILE = Path.of("./storage/cli-compat-test.json");
     private static WebClient client = WebClient.create(Vertx.vertx());
     private static Storage storage;
+    private static Set<Combination> tested = new HashSet<>();
 
     @BeforeAll
     public static void beforeAll() throws IOException {
         storage = readStorage();
     }
 
-    public void store() throws IOException {
+    @AfterAll
+    public static void afterAll() throws IOException {
+        final Set<Combination> failing = tested.stream().filter(not(storage.verified::contains)).collect(Collectors.toSet());
+        if (!failing.isEmpty()) {
+            storage.failing.addAll(failing);
+            store();
+        }
+    }
+    public static void store() throws IOException {
         Files.createDirectories(Path.of("./storage"));
         Files.writeString(STORAGE_FILE, JsonObject.mapFrom(storage).encodePrettily());
     }
@@ -99,6 +108,7 @@ public class CliCompatTest {
                System.out.println("This combination has already been verified: " + c);
                return;
             }
+           tested.add(c);
            testCLI(tempDir.resolve("cli_" + c.cli + "-platform_" + c.platform), c);
            storage.verified.add(c);
            store();
