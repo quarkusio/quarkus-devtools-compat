@@ -71,8 +71,7 @@ public class CliCompatTest {
     Stream<DynamicTest> testCliSnapshot(@TempDir Path tempDir) throws IOException {
         final List<String> versions = fetchAllVersionsFromRegistry();
         return versions.stream()
-            .flatMap(v -> testSnapshot(tempDir, versions))
-            .limit(10);
+            .flatMap(v -> testSnapshot(tempDir, versions));
     }
 
     @TestFactory
