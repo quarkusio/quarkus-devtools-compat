@@ -161,7 +161,7 @@ public class CliCompatTest {
         }
     }
 
-    static record Combination(String platform, String cli) {
+    static record Combination(String cli, String platform) {
     }
 
 
