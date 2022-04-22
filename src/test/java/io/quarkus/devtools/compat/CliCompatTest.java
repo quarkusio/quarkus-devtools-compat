@@ -85,22 +85,22 @@ public class CliCompatTest {
     private Stream<DynamicTest> testVersions(Path tempDir, List<String> allVersions) {
         return Generator.cartesianProduct(allVersions, allVersions).stream()
             .map(i -> new Combination(i.get(0), i.get(1)))
-            .filter(not(storage.verifiedCombinations::contains))
+            .filter(not(storage.verified::contains))
             .map(c -> testCombination(tempDir, c));
     }
 
     private DynamicTest testCombination(Path tempDir, Combination c) {
        return DynamicTest.dynamicTest("Test CLI " + c.cli + " with Platform " + c.platform, () -> {
-           if (storage.ignoredCombinations.contains(c)) {
+           if (storage.ignored.contains(c)) {
                System.out.println("This combination is set to be ignored: " + c);
                return;
            }
-           if (storage.verifiedCombinations.contains(c)) {
+           if (storage.verified.contains(c)) {
                System.out.println("This combination has already been verified: " + c);
                return;
-           }
+            }
            testCLI(tempDir.resolve("cli_" + c.cli + "-platform_" + c.platform), c);
-           storage.verifiedCombinations.add(c);
+           storage.verified.add(c);
            store();
        });
 
@@ -155,9 +155,9 @@ public class CliCompatTest {
 
     }
 
-    static record Storage(Set<Combination> verifiedCombinations, Set<Combination> ignoredCombinations) {
+    static record Storage(Set<Combination> verified, Set<Combination> ignored, Set<Combination> failing) {
         Storage() {
-            this(new HashSet<>(), new HashSet<>());
+            this(new HashSet<>(), new HashSet<>(), new HashSet<>());
         }
     }
 

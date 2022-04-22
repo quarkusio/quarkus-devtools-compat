@@ -1,5 +1,5 @@
 {
-  "verifiedCombinations" : [ {
+  "verified" : [ {
     "cli" : "2.8.1.Final",
     "platform" : "2.2.1.Final"
   }, {
@@ -29,6 +29,9 @@
   }, {
     "cli" : "2.8.1.Final",
     "platform" : "2.8.1.Final"
+  }, {
+    "cli" : "2.8.1.Final",
+    "platform" : "2.1.4.Final"
   }, {
     "cli" : "2.8.1.Final",
     "platform" : "2.6.3.Final"
@@ -81,11 +84,12 @@
     "cli" : "2.8.1.Final",
     "platform" : "2.4.1.Final"
   } ],
-  "ignoredCombinations" : [ {
+  "ignored" : [ {
     "cli" : "2.6.1.Final",
     "platform" : "2.8.1.Final"
   }, {
     "cli" : "2.6.1.Final",
     "platform" : "2.8.0.Final"
-  } ]
+  } ],
+  "failing" : null
 }
