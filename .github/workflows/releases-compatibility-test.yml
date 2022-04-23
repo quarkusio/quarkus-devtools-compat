@@ -41,10 +41,11 @@ jobs:
           git config --local user.email "quarkusbot@xam.dk"
           git config --local user.name "Quarkus Bot"
           git add ./storage/cli-compat-test.json
-          git commit --quiet -m "Commit test storage"
-          git push --quiet
-          echo "Commited test storage"
-
+          if git diff-index --quiet HEAD; then
+            git commit --quiet -m "Commit test storage"
+            git push --quiet
+            echo "Commited test storage"
+          fi
       - name: Report
         uses: dorny/test-reporter@v1
         if: always()

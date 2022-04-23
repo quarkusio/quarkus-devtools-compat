@@ -117,6 +117,7 @@ public class CliCompatTest {
         return Generator.cartesianProduct(allVersions, allVersions).stream()
             .map(i -> new Combination(i.get(0), i.get(1)))
             .filter(not(storage.verified::contains))
+            .filter(not(storage.ignored::contains))
             .map(c -> testCombination(tempDir, c));
     }
 
