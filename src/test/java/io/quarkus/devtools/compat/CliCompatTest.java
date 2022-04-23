@@ -54,7 +54,7 @@ public class CliCompatTest {
     public static void afterAll() throws IOException {
         final Set<Combination> failing = tested.stream().filter(not(storage.verified::contains)).collect(Collectors.toSet());
         if (!failing.isEmpty()) {
-            storage.failing.addAll(failing);
+            storage.ignored.addAll(failing);
             store();
         }
     }
