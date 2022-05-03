@@ -149,11 +149,12 @@ public class CliCompatTest {
         tempDir.toFile().mkdirs();
         trustQuarkusRepo(tempDir);
         String appName = "qs-" + combination.cli.replace(".", "_");
-        String repoDir = Objects.equals(combination.cli, SNAPSHOT_VERSION) ? getQuarkusMavenRepoLocal() : MAVEN_CENTRAL_QUARKUS_REPO;
+        final boolean isSnapshot = Objects.equals(combination.cli, SNAPSHOT_VERSION);
+        String repoDir = isSnapshot ? getQuarkusMavenRepoLocal() : MAVEN_CENTRAL_QUARKUS_REPO;
         String output = jbang(tempDir, "alias", "add", "-f", ".", "--name=" + appName, repoDir + "quarkus-cli/" + combination.cli + "/quarkus-cli-" + combination.cli + "-runner.jar");
-
+        final String platformGroup = isSnapshot ? "io.quarkus" : "io.quarkus.platform";
         assertThat(output, matchesPattern(".jbang. Alias .* added .*\n"));
-        List<String> commands = List.of(appName, "create", "-P", "io.quarkus.platform::" + combination.platform, "demoapp");
+        List<String> commands = List.of(appName, "create", "-P", platformGroup + "::" + combination.platform, "demoapp");
         propagateSystemPropertyIfSet("maven.repo.local", commands);
         String createResult = jbang(tempDir, commands);
 
@@ -179,6 +180,7 @@ public class CliCompatTest {
         if (!quarkusRepoTrusted) {
             String trust = jbang(tempDir, "trust", "add", MAVEN_CENTRAL_QUARKUS_REPO);
             assertThat(trust, matchesPattern("(?s).*Adding ." + MAVEN_CENTRAL_QUARKUS_REPO + ". to .*/trusted-sources.json.*"));
+            quarkusRepoTrusted = true;
         }
     }
 
