@@ -19,6 +19,7 @@ import org.zeroturnaround.exec.stream.LogOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -41,6 +42,7 @@ public class CliCompatTest {
 
     private static final Path STORAGE_FILE = Path.of("./storage/cli-compat-test.json");
     private static final String ECOSYSTEM_CI = "ECOSYSTEM_CI";
+    private static final String SNAPSHOT_VERSION = "999-SNAPSHOT";
     private static WebClient client = WebClient.create(Vertx.vertx());
     private static Storage storage;
     private static Set<Combination> tested = new HashSet<>();
@@ -107,7 +109,9 @@ public class CliCompatTest {
     }
 
     private Stream<DynamicTest> testSnapshot(Path tempDir, List<String> allVersions) {
-        return Generator.cartesianProduct(List.of("999-SNAPSHOT"), allVersions).stream()
+        List<String> allVersionAndSnapshot = new ArrayList<>(allVersions);
+        allVersionAndSnapshot.add(SNAPSHOT_VERSION);
+        return Generator.cartesianProduct(List.of(SNAPSHOT_VERSION), allVersionAndSnapshot).stream()
             .flatMap(i -> Stream.of(new Combination(i.get(0), i.get(1)), new Combination(i.get(1), i.get(0))))
             .filter(not(storage.verified::contains))
             .map(c -> testCombination(tempDir, c));
@@ -151,8 +155,9 @@ public class CliCompatTest {
         String output = jbang(tempDir, "alias", "add", "-f", ".", "--name="+appname, "https://repo1.maven.org/maven2/io/quarkus/quarkus-cli/" + combination.cli + "/quarkus-cli-"+combination.cli +"-runner.jar");
 
         assertThat(output, matchesPattern(".jbang. Alias .* added .*\n"));
-
-        String createResult = jbang(tempDir,appname, "create", "-P", "io.quarkus.platform::" + combination.platform, "demoapp");
+        List<String> commands = List.of(appname, "create", "-P", "io.quarkus.platform::" + combination.platform, "demoapp");
+        propagateSystemPropertyIfSet("maven.repo.local", commands);
+        String createResult = jbang(tempDir, commands);
 
         assertThat(tempDir.toFile(), aFileWithSize(greaterThan(1L)));
 
@@ -166,13 +171,15 @@ public class CliCompatTest {
 
         assertThat(result, equalTo(0));
     }
-
-    String jbang(Path workingDir, String... args) throws IOException, InterruptedException, TimeoutException {
+    String jbang(Path workingDir, List<String> args) throws IOException, InterruptedException, TimeoutException {
         List<String> realArgs = new ArrayList<>();
         realArgs.add(Path.of("./jbang").toAbsolutePath().toString());
-        realArgs.addAll(Arrays.asList(args));
+        realArgs.addAll(args);
 
         return run(workingDir, realArgs.toArray(new String[0])).execute().outputUTF8();
+    }
+    String jbang(Path workingDir, String... args) throws IOException, InterruptedException, TimeoutException {
+       return jbang(workingDir, Arrays.asList(args));
     }
 
     ProcessExecutor run(Path workingDir, String... args) throws IOException, InterruptedException, TimeoutException {
@@ -194,6 +201,19 @@ public class CliCompatTest {
             .onItem().transform(HttpResponse::bodyAsJsonObject)
             .onItem().transform(CliCompatTest::extractVersions)
             .await().indefinitely();
+    }
+
+
+    private static void propagateSystemPropertyIfSet(String name, List<String> command) {
+        if (System.getProperties().containsKey(name)) {
+            final StringBuilder buf = new StringBuilder();
+            buf.append("-D").append(name);
+            final String value = System.getProperty(name);
+            if (value != null && !value.isEmpty()) {
+                buf.append("=").append(value);
+            }
+            command.add(buf.toString());
+        }
     }
 
     static record Storage(Set<Combination> verified, Set<Combination> ignored, Set<Combination> failing) {
