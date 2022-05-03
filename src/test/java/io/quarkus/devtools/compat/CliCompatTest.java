@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -43,6 +44,7 @@ public class CliCompatTest {
     private static final String ECOSYSTEM_CI = "ECOSYSTEM_CI";
     private static final String SNAPSHOT_VERSION = "999-SNAPSHOT";
     private static final String MAVEN_CENTRAL_QUARKUS_REPO = "https://repo1.maven.org/maven2/io/quarkus/";
+    private static final String REGISTRY_VERSIONS_URL = "https://registry.quarkus.io/client/platforms/all";
     private static WebClient client = WebClient.create(Vertx.vertx());
     private static Storage storage;
     private static Set<Combination> tested = new HashSet<>();
@@ -73,7 +75,7 @@ public class CliCompatTest {
     @TestFactory
     @EnabledIfEnvironmentVariable(named = ECOSYSTEM_CI, matches = "true")
     Stream<DynamicTest> testCliSnapshot(@TempDir Path tempDir) throws IOException {
-        final List<String> versions = fetchAllVersionsFromRegistry();
+        final List<String> versions = fetchLatestVersionsFromRegistry();
         return versions.stream()
             .flatMap(v -> testSnapshot(tempDir, versions));
     }
@@ -96,6 +98,16 @@ public class CliCompatTest {
 
     private static boolean isEcosystemCI() {
         return Objects.equals(System.getenv(ECOSYSTEM_CI), "true");
+    }
+
+    private static List<String> extractLatestVersions(JsonObject o) {
+        return o.getJsonArray("platforms").stream()
+            .map(m -> (JsonObject) m)
+            .flatMap(j -> j.getJsonArray("streams").stream())
+            .map(m -> (JsonObject) m)
+            .map(j -> j.getJsonArray("releases").getJsonObject(0))
+            .map(j -> j.getString("version"))
+            .collect(Collectors.toList());
     }
 
     private static List<String> extractVersions(JsonObject o) {
@@ -149,10 +161,9 @@ public class CliCompatTest {
         tempDir.toFile().mkdirs();
         trustQuarkusRepo(tempDir);
         String appName = "qs-" + combination.cli.replace(".", "_");
-        final boolean isSnapshot = Objects.equals(combination.cli, SNAPSHOT_VERSION);
-        String repoDir = isSnapshot ? getQuarkusMavenRepoLocal() : MAVEN_CENTRAL_QUARKUS_REPO;
+        String repoDir =  Objects.equals(combination.cli, SNAPSHOT_VERSION) ? getQuarkusMavenRepoLocal() : MAVEN_CENTRAL_QUARKUS_REPO;
         String output = jbang(tempDir, "alias", "add", "-f", ".", "--name=" + appName, repoDir + "quarkus-cli/" + combination.cli + "/quarkus-cli-" + combination.cli + "-runner.jar");
-        final String platformGroup = isSnapshot ? "io.quarkus" : "io.quarkus.platform";
+        final String platformGroup =  Objects.equals(combination.platform, SNAPSHOT_VERSION) ? "io.quarkus" : "io.quarkus.platform";
         assertThat(output, matchesPattern(".jbang. Alias .* added .*\n"));
         List<String> commands = List.of(appName, "create", "-P", platformGroup + "::" + combination.platform, "demoapp");
         propagateSystemPropertyIfSet("maven.repo.local", commands);
@@ -209,8 +220,16 @@ public class CliCompatTest {
 
     }
 
+    private List<String> fetchLatestVersionsFromRegistry() {
+        return client.getAbs(REGISTRY_VERSIONS_URL)
+            .send()
+            .onItem().transform(HttpResponse::bodyAsJsonObject)
+            .onItem().transform(CliCompatTest::extractLatestVersions)
+            .await().indefinitely();
+    }
+
     private List<String> fetchAllVersionsFromRegistry() {
-        return client.getAbs("https://registry.quarkus.io/client/platforms/all")
+        return client.getAbs(REGISTRY_VERSIONS_URL)
             .send()
             .onItem().transform(HttpResponse::bodyAsJsonObject)
             .onItem().transform(CliCompatTest::extractVersions)
