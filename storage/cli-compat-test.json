@@ -1047,6 +1047,9 @@
     "cli" : "2.1.2.Final",
     "platform" : "2.9.0.Final"
   }, {
+    "cli" : "2.1.0.Final",
+    "platform" : "2.10.2.Final"
+  }, {
     "cli" : "2.5.3.Final",
     "platform" : "2.1.2.Final"
   }, {
