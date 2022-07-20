@@ -1,5 +1,8 @@
 package io.quarkus.devtools.compat;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.vertx.core.json.JsonObject;
 
 import java.io.IOException;
@@ -37,23 +40,61 @@ public class TestUtils {
         Files.writeString(storage, JsonObject.mapFrom(s).encodePrettily());
     }
 
-    public static record Combinations(Set<Combination> values) {
-        Combinations() {
+    public static final class Combinations {
+        private final Set<Combination> values;
+        private final Set<String> ignorePlatform;
+        private final Set<String> ignoreCli;
+
+        @JsonCreator
+        public Combinations(@JsonProperty("values") Set<Combination> values) {
+            this.values = values;
+            this.ignorePlatform = values.stream()
+                    .filter(v -> Objects.equals(v.cli(), "*"))
+                    .map(Combination::platform)
+                    .collect(Collectors.toSet());
+            this.ignoreCli = values.stream()
+                    .filter(v -> Objects.equals(v.platform(), "*")).map(Combination::cli)
+                    .collect(Collectors.toSet());
+        }
+
+        public Combinations() {
             this(new HashSet<>());
         }
 
-
         public boolean contains(Combination c) {
-            final Set<String> ignorePlatform = values.stream().filter(v -> isNull(v.cli())).map(Combination::platform)
-                    .collect(Collectors.toSet());
-            final Set<String> ignoreCli = values.stream().filter(v -> isNull(v.platform())).map(Combination::cli)
-                    .collect(Collectors.toSet());
             return ignorePlatform.contains(c.platform()) || ignoreCli.contains(c.cli()) || values.contains(c);
         }
 
         public boolean notContains(Combination c) {
             return !contains(c);
         }
+
+        @JsonGetter("values")
+        public Set<Combination> values() {
+            return values;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this)
+                return true;
+            if (obj == null || obj.getClass() != this.getClass())
+                return false;
+            var that = (Combinations) obj;
+            return Objects.equals(this.values, that.values);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(values);
+        }
+
+        @Override
+        public String toString() {
+            return "Combinations[" +
+                    "values=" + values + ']';
+        }
+
     }
 
     public static record Combination(String cli, String platform) {

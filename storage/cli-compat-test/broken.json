@@ -1,9 +1,9 @@
 {
   "values" : [ {
     "cli" : "2.6.1.Final",
-    "platform" : null
+    "platform" : "*"
   }, {
     "cli" : "2.6.0.Final",
-    "platform" : null
+    "platform" : "*"
   } ]
 }
