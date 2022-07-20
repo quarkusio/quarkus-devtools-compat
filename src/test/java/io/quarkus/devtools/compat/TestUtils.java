@@ -9,6 +9,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
 
 public class TestUtils {
     public static final String ECOSYSTEM_CI = "ECOSYSTEM_CI";
@@ -39,12 +42,17 @@ public class TestUtils {
             this(new HashSet<>());
         }
 
+
         public boolean contains(Combination c) {
-            return values.contains(c);
+            final Set<String> ignorePlatform = values.stream().filter(v -> isNull(v.cli())).map(Combination::platform)
+                    .collect(Collectors.toSet());
+            final Set<String> ignoreCli = values.stream().filter(v -> isNull(v.platform())).map(Combination::cli)
+                    .collect(Collectors.toSet());
+            return ignorePlatform.contains(c.platform()) || ignoreCli.contains(c.cli()) || values.contains(c);
         }
 
         public boolean notContains(Combination c) {
-            return !values.contains(c);
+            return !contains(c);
         }
     }
 

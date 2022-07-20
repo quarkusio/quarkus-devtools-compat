@@ -15,6 +15,7 @@ import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.junit.jupiter.api.io.TempDir;
 import org.paukov.combinatorics3.Generator;
+import org.paukov.combinatorics3.IGenerator;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.stream.LogOutputStream;
 
@@ -43,8 +44,8 @@ import static org.hamcrest.io.FileMatchers.aFileWithSize;
 public class CliCompatTest {
 
     private static final String VERIFIED = "cli-compat-test/verified.json";
-    private static final String FAILING = "cli-compat-test/failing.json";
-    private static final String IGNORED = "cli-compat-test/ignored.json";
+    private static final String BROKEN = "cli-compat-test/broken.json";
+    private static final String TEST_FAILED = "cli-compat-test/test-failed.json";
 
     private static final String SNAPSHOT_VERSION = "999-SNAPSHOT";
     private static final String MAVEN_CENTRAL_QUARKUS_REPO = "https://repo1.maven.org/maven2/io/quarkus/";
@@ -63,19 +64,19 @@ public class CliCompatTest {
 
     @AfterAll
     public static void afterAll() throws IOException {
-        final Set<Combination> failing = tested.stream().filter(storage.verified::notContains).collect(Collectors.toSet());
-        if (!failing.isEmpty()) {
-            storage.ignored.values().addAll(failing);
+        final Set<Combination> testFailed = tested.stream().filter(storage.verified::notContains).collect(Collectors.toSet());
+        if (!testFailed.isEmpty()) {
+            storage.testFailed.values().addAll(testFailed);
             store();
         }
     }
 
     private static Storage readStorage() throws IOException {
         if (isEcosystemCI()) {
-            return new Storage();
+            return new Storage(new Combinations(), new Combinations(), readStorageCombinations(BROKEN));
         }
 
-        return new Storage(readStorageCombinations(VERIFIED), readStorageCombinations(IGNORED), readStorageCombinations(FAILING));
+        return new Storage(readStorageCombinations(VERIFIED), readStorageCombinations(TEST_FAILED), readStorageCombinations(BROKEN));
     }
 
     public static void store() throws IOException {
@@ -83,8 +84,8 @@ public class CliCompatTest {
             return;
         }
         TestUtils.writeToStorage(VERIFIED, storage.verified);
-        TestUtils.writeToStorage(IGNORED, storage.ignored);
-        TestUtils.writeToStorage(FAILING, storage.failing);
+        TestUtils.writeToStorage(TEST_FAILED, storage.testFailed);
+        TestUtils.writeToStorage(BROKEN, storage.broken);
     }
 
     @TestFactory
@@ -101,12 +102,8 @@ public class CliCompatTest {
         final List<String> versions = fetchAllVersionsFromRegistry();
         return versions.stream()
             .flatMap(v -> testVersions(tempDir, versions))
-            .limit(10);
+            .limit(storage.testFailed.values().size() + 10);
     }
-
-
-
-
 
     private static List<String> extractLatestVersions(JsonObject o) {
         return o.getJsonArray("platforms").stream()
@@ -142,15 +139,15 @@ public class CliCompatTest {
     private Stream<DynamicTest> testVersions(Path tempDir, List<String> allVersions) {
         return Generator.cartesianProduct(allVersions, allVersions).stream()
             .map(i -> new Combination(i.get(0), i.get(1)))
+            .filter(storage.broken::notContains)
             .filter(storage.verified::notContains)
-            .filter(storage.ignored::notContains)
             .map(c -> testCombination(tempDir, c));
     }
 
     private DynamicTest testCombination(Path tempDir, Combination c) {
         return DynamicTest.dynamicTest("Test CLI " + c.cli() + " with Platform " + c.platform(), () -> {
-            if (storage.ignored.contains(c)) {
-                System.out.println("This combination is set to be ignored: " + c);
+            if (storage.testFailed.contains(c)) {
+                System.out.println("This combination has already failed in a preview run: " + c);
                 return;
             }
             if (storage.verified.contains(c)) {
@@ -257,7 +254,7 @@ public class CliCompatTest {
         }
     }
 
-    static record Storage(Combinations verified, Combinations ignored, Combinations failing) {
+    static record Storage(Combinations verified, Combinations testFailed, Combinations broken) {
         Storage() {
             this(new Combinations(), new Combinations(), new Combinations());
         }

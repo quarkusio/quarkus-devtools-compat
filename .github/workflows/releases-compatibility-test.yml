@@ -40,7 +40,7 @@ jobs:
         run: |
           git config --local user.email "quarkusbot@xam.dk"
           git config --local user.name "Quarkus Bot"
-          git add ./storage/cli-compat-test.json
+          git add ./storage/cli-compat-test/*
           if ! git diff-index --quiet HEAD; then
             git commit --quiet -m "Commit test storage"
             git push --quiet
