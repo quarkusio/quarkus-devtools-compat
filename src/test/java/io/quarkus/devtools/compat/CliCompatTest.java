@@ -1,6 +1,8 @@
 package io.quarkus.devtools.compat;
 
 
+import io.quarkus.devtools.compat.TestUtils.Combination;
+import io.quarkus.devtools.compat.TestUtils.Combinations;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.ext.web.client.HttpResponse;
@@ -17,11 +19,9 @@ import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.stream.LogOutputStream;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -30,7 +30,9 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.function.Predicate.not;
+import static io.quarkus.devtools.compat.TestUtils.ECOSYSTEM_CI;
+import static io.quarkus.devtools.compat.TestUtils.isEcosystemCI;
+import static io.quarkus.devtools.compat.TestUtils.readStorageCombinations;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -40,12 +42,16 @@ import static org.hamcrest.io.FileMatchers.aFileWithSize;
 
 public class CliCompatTest {
 
-    private static final Path STORAGE_FILE = Path.of("./storage/cli-compat-test.json");
-    private static final String ECOSYSTEM_CI = "ECOSYSTEM_CI";
+    private static final String VERIFIED = "cli-compat-test/verified.json";
+    private static final String FAILING = "cli-compat-test/failing.json";
+    private static final String IGNORED = "cli-compat-test/ignored.json";
+
     private static final String SNAPSHOT_VERSION = "999-SNAPSHOT";
     private static final String MAVEN_CENTRAL_QUARKUS_REPO = "https://repo1.maven.org/maven2/io/quarkus/";
     private static final String REGISTRY_VERSIONS_URL = "https://registry.quarkus.io/client/platforms/all";
     private static WebClient client = WebClient.create(Vertx.vertx());
+
+
     private static Storage storage;
     private static Set<Combination> tested = new HashSet<>();
     private static volatile boolean quarkusRepoTrusted = false;
@@ -57,19 +63,28 @@ public class CliCompatTest {
 
     @AfterAll
     public static void afterAll() throws IOException {
-        final Set<Combination> failing = tested.stream().filter(not(storage.verified::contains)).collect(Collectors.toSet());
+        final Set<Combination> failing = tested.stream().filter(storage.verified::notContains).collect(Collectors.toSet());
         if (!failing.isEmpty()) {
-            storage.ignored.addAll(failing);
+            storage.ignored.values().addAll(failing);
             store();
         }
+    }
+
+    private static Storage readStorage() throws IOException {
+        if (isEcosystemCI()) {
+            return new Storage();
+        }
+
+        return new Storage(readStorageCombinations(VERIFIED), readStorageCombinations(IGNORED), readStorageCombinations(FAILING));
     }
 
     public static void store() throws IOException {
         if (isEcosystemCI()) {
             return;
         }
-        Files.createDirectories(Path.of("./storage"));
-        Files.writeString(STORAGE_FILE, JsonObject.mapFrom(storage).encodePrettily());
+        TestUtils.writeToStorage(VERIFIED, storage.verified);
+        TestUtils.writeToStorage(IGNORED, storage.ignored);
+        TestUtils.writeToStorage(FAILING, storage.failing);
     }
 
     @TestFactory
@@ -89,16 +104,9 @@ public class CliCompatTest {
             .limit(10);
     }
 
-    private static Storage readStorage() throws IOException {
-        if (isEcosystemCI() || !Files.isRegularFile(STORAGE_FILE)) {
-            return new Storage();
-        }
-        return (new JsonObject(Files.readString(STORAGE_FILE))).mapTo(Storage.class);
-    }
 
-    private static boolean isEcosystemCI() {
-        return Objects.equals(System.getenv(ECOSYSTEM_CI), "true");
-    }
+
+
 
     private static List<String> extractLatestVersions(JsonObject o) {
         return o.getJsonArray("platforms").stream()
@@ -127,20 +135,20 @@ public class CliCompatTest {
         allVersionAndSnapshot.add(SNAPSHOT_VERSION);
         return Generator.cartesianProduct(List.of(SNAPSHOT_VERSION), allVersionAndSnapshot).stream()
             .flatMap(i -> Stream.of(new Combination(i.get(0), i.get(1)), new Combination(i.get(1), i.get(0))))
-            .filter(not(storage.verified::contains))
+            .filter(storage.verified::notContains)
             .map(c -> testCombination(tempDir, c));
     }
 
     private Stream<DynamicTest> testVersions(Path tempDir, List<String> allVersions) {
         return Generator.cartesianProduct(allVersions, allVersions).stream()
             .map(i -> new Combination(i.get(0), i.get(1)))
-            .filter(not(storage.verified::contains))
-            .filter(not(storage.ignored::contains))
+            .filter(storage.verified::notContains)
+            .filter(storage.ignored::notContains)
             .map(c -> testCombination(tempDir, c));
     }
 
     private DynamicTest testCombination(Path tempDir, Combination c) {
-        return DynamicTest.dynamicTest("Test CLI " + c.cli + " with Platform " + c.platform, () -> {
+        return DynamicTest.dynamicTest("Test CLI " + c.cli() + " with Platform " + c.platform(), () -> {
             if (storage.ignored.contains(c)) {
                 System.out.println("This combination is set to be ignored: " + c);
                 return;
@@ -150,8 +158,8 @@ public class CliCompatTest {
                 return;
             }
             tested.add(c);
-            testCLI(tempDir.resolve("cli_" + c.cli + "-platform_" + c.platform), c);
-            storage.verified.add(c);
+            testCLI(tempDir.resolve("cli_" + c.cli() + "-platform_" + c.platform()), c);
+            storage.verified.values().add(c);
             store();
         });
 
@@ -160,12 +168,12 @@ public class CliCompatTest {
     public void testCLI(Path tempDir, Combination combination) throws IOException, InterruptedException, TimeoutException {
         tempDir.toFile().mkdirs();
         trustQuarkusRepo(tempDir);
-        String appName = "qs-" + combination.cli.replace(".", "_");
-        String repoDir =  Objects.equals(combination.cli, SNAPSHOT_VERSION) ? getQuarkusMavenRepoLocal() : MAVEN_CENTRAL_QUARKUS_REPO;
-        String output = jbang(tempDir, "alias", "add", "-f", ".", "--name=" + appName, repoDir + "quarkus-cli/" + combination.cli + "/quarkus-cli-" + combination.cli + "-runner.jar");
-        final String platformGroup =  Objects.equals(combination.platform, SNAPSHOT_VERSION) ? "io.quarkus" : "io.quarkus.platform";
+        String appName = "qs-" + combination.cli().replace(".", "_");
+        String repoDir =  Objects.equals(combination.cli(), SNAPSHOT_VERSION) ? getQuarkusMavenRepoLocal() : MAVEN_CENTRAL_QUARKUS_REPO;
+        String output = jbang(tempDir, "alias", "add", "-f", ".", "--name=" + appName, repoDir + "quarkus-cli/" + combination.cli() + "/quarkus-cli-" + combination.cli() + "-runner.jar");
+        final String platformGroup =  Objects.equals(combination.platform(), SNAPSHOT_VERSION) ? "io.quarkus" : "io.quarkus.platform";
         assertThat(output, matchesPattern(".jbang. Alias .* added .*\n"));
-        List<String> commands = List.of(appName, "create", "-P", platformGroup + "::" + combination.platform, "demoapp");
+        List<String> commands = List.of(appName, "create", "-P", platformGroup + "::" + combination.platform(), "demoapp");
         propagateSystemPropertyIfSet("maven.repo.local", commands);
         String createResult = jbang(tempDir, commands);
 
@@ -249,14 +257,10 @@ public class CliCompatTest {
         }
     }
 
-    static record Storage(Set<Combination> verified, Set<Combination> ignored, Set<Combination> failing) {
+    static record Storage(Combinations verified, Combinations ignored, Combinations failing) {
         Storage() {
-            this(new HashSet<>(), new HashSet<>(), new HashSet<>());
+            this(new Combinations(), new Combinations(), new Combinations());
         }
     }
-
-    static record Combination(String cli, String platform) {
-    }
-
 
 }
