@@ -15,7 +15,6 @@ import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.junit.jupiter.api.io.TempDir;
 import org.paukov.combinatorics3.Generator;
-import org.paukov.combinatorics3.IGenerator;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.stream.LogOutputStream;
 
@@ -28,12 +27,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static io.quarkus.devtools.compat.TestUtils.ECOSYSTEM_CI;
 import static io.quarkus.devtools.compat.TestUtils.isEcosystemCI;
 import static io.quarkus.devtools.compat.TestUtils.readStorageCombinations;
+import static java.util.function.Predicate.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -44,7 +45,6 @@ import static org.hamcrest.io.FileMatchers.aFileWithSize;
 public class CliCompatTest {
 
     private static final String VERIFIED = "cli-compat-test/verified.json";
-    private static final String BROKEN = "cli-compat-test/broken.json";
     private static final String TEST_FAILED = "cli-compat-test/test-failed.json";
 
     private static final String SNAPSHOT_VERSION = "999-SNAPSHOT";
@@ -56,6 +56,7 @@ public class CliCompatTest {
     private static Storage storage;
     private static Set<Combination> tested = new HashSet<>();
     private static volatile boolean quarkusRepoTrusted = false;
+
 
     @BeforeAll
     public static void beforeAll() throws IOException {
@@ -73,10 +74,10 @@ public class CliCompatTest {
 
     private static Storage readStorage() throws IOException {
         if (isEcosystemCI()) {
-            return new Storage(new Combinations(), new Combinations(), readStorageCombinations(BROKEN));
+            return new Storage();
         }
 
-        return new Storage(readStorageCombinations(VERIFIED), readStorageCombinations(TEST_FAILED), readStorageCombinations(BROKEN));
+        return new Storage(readStorageCombinations(VERIFIED), readStorageCombinations(TEST_FAILED));
     }
 
     public static void store() throws IOException {
@@ -85,7 +86,6 @@ public class CliCompatTest {
         }
         TestUtils.writeToStorage(VERIFIED, storage.verified);
         TestUtils.writeToStorage(TEST_FAILED, storage.testFailed);
-        TestUtils.writeToStorage(BROKEN, storage.broken);
     }
 
     @TestFactory
@@ -139,7 +139,7 @@ public class CliCompatTest {
     private Stream<DynamicTest> testVersions(Path tempDir, List<String> allVersions) {
         return Generator.cartesianProduct(allVersions, allVersions).stream()
             .map(i -> new Combination(i.get(0), i.get(1)))
-            .filter(storage.broken::notContains)
+            .filter(not(BrokenVersion::isBroken))
             .filter(storage.verified::notContains)
             .map(c -> testCombination(tempDir, c));
     }
@@ -254,9 +254,9 @@ public class CliCompatTest {
         }
     }
 
-    static record Storage(Combinations verified, Combinations testFailed, Combinations broken) {
+    static record Storage(Combinations verified, Combinations testFailed) {
         Storage() {
-            this(new Combinations(), new Combinations(), new Combinations());
+            this(new Combinations(), new Combinations());
         }
     }
 

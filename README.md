@@ -7,6 +7,5 @@ This is testing the Quarkus CLI and the Platform:
 > **NOTE**: For each combinations, the test consist of the default project creation then its build.
 
 The storage is on [GitHub](https://github.com/quarkusio/quarkus-devtools-compat/tree/main/storage/cli-compat-test):
-- [broken.json](https://github.com/quarkusio/quarkus-devtools-compat/blob/main/storage/cli-compat-test/broken.json) contains known broken versions (CLI or Platform) to be ignored
 - [verified.json](https://github.com/quarkusio/quarkus-devtools-compat/blob/main/storage/cli-compat-test/verified.json) contains all the combinations which has been verified (the test passed). **Once a release test has passed for a combination the result is immutable.**
-- [test-failed.json](https://github.com/quarkusio/quarkus-devtools-compat/blob/main/storage/cli-compat-test/test-failed.json) contains tests combination which failed and should be analysed and manually set to be ignored in broken.json.
+- [test-failed.json](https://github.com/quarkusio/quarkus-devtools-compat/blob/main/storage/cli-compat-test/test-failed.json) contains tests combination which failed. **If it contains values, create an issue with the error, and manually set to be ignored in the `BrokenVersion` class**.
