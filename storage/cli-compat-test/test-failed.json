@@ -1,3 +1,6 @@
 {
-  "values" : [ ]
+  "values" : [ {
+    "cli" : "2.13.4.Final",
+    "platform" : "2.2.4.Final"
+  } ]
 }
