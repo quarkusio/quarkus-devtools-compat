@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -132,6 +131,7 @@ public class CliCompatTest {
         allVersionAndSnapshot.add(SNAPSHOT_VERSION);
         return Generator.cartesianProduct(List.of(SNAPSHOT_VERSION), allVersionAndSnapshot).stream()
             .flatMap(i -> Stream.of(new Combination(i.get(0), i.get(1)), new Combination(i.get(1), i.get(0))))
+            .filter(not(BrokenVersion::isBroken))
             .filter(storage.verified::notContains)
             .map(c -> testCombination(tempDir, c));
     }
