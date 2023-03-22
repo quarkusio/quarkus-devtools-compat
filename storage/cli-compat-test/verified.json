@@ -831,6 +831,9 @@
     "cli" : "2.16.2.Final",
     "platform" : "2.10.3.Final"
   }, {
+    "cli" : "2.10.2.Final",
+    "platform" : "2.16.5.Final"
+  }, {
     "cli" : "2.7.1.Final",
     "platform" : "2.7.5.Final"
   }, {
@@ -1895,6 +1898,9 @@
   }, {
     "cli" : "2.12.0.Final",
     "platform" : "2.14.1.Final"
+  }, {
+    "cli" : "2.11.3.Final",
+    "platform" : "2.16.5.Final"
   }, {
     "cli" : "2.7.1.Final",
     "platform" : "2.3.1.Final"
@@ -4677,6 +4683,9 @@
     "cli" : "2.7.6.Final",
     "platform" : "2.6.1.Final"
   }, {
+    "cli" : "2.11.1.Final",
+    "platform" : "2.16.5.Final"
+  }, {
     "cli" : "2.11.3.Final",
     "platform" : "2.4.1.Final"
   }, {
@@ -6690,6 +6699,9 @@
     "cli" : "2.11.1.Final",
     "platform" : "2.7.3.Final"
   }, {
+    "cli" : "2.10.3.Final",
+    "platform" : "2.16.5.Final"
+  }, {
     "cli" : "2.16.0.Final",
     "platform" : "2.6.3.Final"
   }, {
@@ -7713,6 +7725,9 @@
     "cli" : "2.7.5.Final",
     "platform" : "2.16.4.Final"
   }, {
+    "cli" : "2.10.0.Final",
+    "platform" : "2.16.5.Final"
+  }, {
     "cli" : "2.5.0.Final",
     "platform" : "2.12.2.Final"
   }, {
@@ -8304,6 +8319,9 @@
     "cli" : "2.7.5.Final",
     "platform" : "2.14.0.Final"
   }, {
+    "cli" : "2.9.2.Final",
+    "platform" : "2.16.5.Final"
+  }, {
     "cli" : "2.14.0.Final",
     "platform" : "2.11.2.Final"
   }, {
@@ -11493,6 +11511,9 @@
     "cli" : "2.2.5.Final",
     "platform" : "2.12.1.Final"
   }, {
+    "cli" : "2.9.1.Final",
+    "platform" : "2.16.5.Final"
+  }, {
     "cli" : "2.8.3.Final",
     "platform" : "2.10.3.Final"
   }, {
@@ -12906,6 +12927,9 @@
     "cli" : "2.13.1.Final",
     "platform" : "2.13.4.Final"
   }, {
+    "cli" : "2.10.4.Final",
+    "platform" : "2.16.5.Final"
+  }, {
     "cli" : "2.3.0.Final",
     "platform" : "2.1.0.Final"
   }, {
@@ -13010,6 +13034,9 @@
   }, {
     "cli" : "2.5.0.Final",
     "platform" : "2.8.2.Final"
+  }, {
+    "cli" : "2.10.1.Final",
+    "platform" : "2.16.5.Final"
   }, {
     "cli" : "2.14.3.Final",
     "platform" : "2.14.1.Final"
@@ -13757,6 +13784,9 @@
   }, {
     "cli" : "2.8.2.Final",
     "platform" : "2.10.0.Final"
+  }, {
+    "cli" : "2.11.2.Final",
+    "platform" : "2.16.5.Final"
   }, {
     "cli" : "2.5.4.Final",
     "platform" : "2.1.2.Final"
