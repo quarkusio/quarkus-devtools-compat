@@ -2157,6 +2157,9 @@
     "cli" : "2.2.4.Final",
     "platform" : "2.2.1.Final"
   }, {
+    "cli" : "2.11.2.Final",
+    "platform" : "3.0.3.Final"
+  }, {
     "cli" : "2.5.0.Final",
     "platform" : "2.13.5.Final"
   }, {
@@ -16742,6 +16745,9 @@
   }, {
     "cli" : "2.13.3.Final",
     "platform" : "2.6.1.Final"
+  }, {
+    "cli" : "2.11.1.Final",
+    "platform" : "3.0.3.Final"
   }, {
     "cli" : "2.7.5.Final",
     "platform" : "2.6.3.Final"
