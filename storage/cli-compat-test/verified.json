@@ -17490,6 +17490,9 @@
     "cli" : "2.13.0.Final",
     "platform" : "3.2.0.Final"
   }, {
+    "cli" : "2.11.1.Final",
+    "platform" : "3.2.2.Final"
+  }, {
     "cli" : "3.0.2.Final",
     "platform" : "2.11.1.Final"
   }, {
