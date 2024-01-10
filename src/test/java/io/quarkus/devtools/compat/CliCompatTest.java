@@ -115,6 +115,9 @@ public class CliCompatTest {
     }
 
     private static List<String> extractVersions(JsonObject o) {
+        if(o == null) {
+            return List.of();
+        }
         return o.getJsonArray("platforms").stream()
             .map(m -> (JsonObject) m)
             .flatMap(j -> j.getJsonArray("streams").stream())
@@ -122,7 +125,7 @@ public class CliCompatTest {
             .flatMap(j -> j.getJsonArray("releases").stream())
             .map(m -> (JsonObject) m)
             .map(j -> j.getString("version"))
-            .filter(v -> v.contains("Final"))
+            .filter(v -> v.contains("Final") || v.matches("\\d+\\.\\d+\\.\\d+"))
             .collect(Collectors.toList());
     }
 
