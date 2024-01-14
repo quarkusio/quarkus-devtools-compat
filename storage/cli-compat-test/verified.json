@@ -35055,6 +35055,9 @@
     "cli" : "2.16.1.Final",
     "platform" : "3.2.1.Final"
   }, {
+    "cli" : "2.11.1.Final",
+    "platform" : "3.3.0"
+  }, {
     "cli" : "3.2.4.Final",
     "platform" : "2.2.2.Final"
   }, {
