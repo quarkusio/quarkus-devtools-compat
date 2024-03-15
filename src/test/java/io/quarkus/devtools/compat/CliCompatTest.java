@@ -173,7 +173,7 @@ public class CliCompatTest {
         String output = jbang(tempDir, "alias", "add", "-f", ".", "--name=" + appName, repoDir + "quarkus-cli/" + combination.cli() + "/quarkus-cli-" + combination.cli() + "-runner.jar");
         final String platformGroup =  Objects.equals(combination.platform(), SNAPSHOT_VERSION) ? "io.quarkus" : "io.quarkus.platform";
         assertThat(output, matchesPattern(".jbang. Alias .* added .*\n"));
-        List<String> commands = List.of(appName, "create", "-P", platformGroup + "::" + combination.platform(), "demoapp");
+        List<String> commands = List.of(appName, "create", "app", "-P="+platformGroup + "::" + combination.platform(), "demoapp");
         propagateSystemPropertyIfSet("maven.repo.local", commands);
         String createResult = jbang(tempDir, commands);
 

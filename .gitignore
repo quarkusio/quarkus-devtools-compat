@@ -10,6 +10,8 @@ bin/
 *.iml
 *.iws
 
+.quarkus/
+
 # NetBeans
 nb-configuration.xml
 
