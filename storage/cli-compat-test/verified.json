@@ -7266,6 +7266,9 @@
     "cli" : "2.11.1.Final",
     "platform" : "3.9.1"
   }, {
+    "cli" : "2.11.1.Final",
+    "platform" : "3.9.2"
+  }, {
     "cli" : "3.2.2.Final",
     "platform" : "2.6.3.Final"
   }, {
