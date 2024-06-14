@@ -19,6 +19,7 @@ import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.stream.LogOutputStream;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -157,8 +158,15 @@ public class CliCompatTest {
                 System.out.println("This combination has already been verified: " + c);
                 return;
             }
+            final Path combTestDir = tempDir.resolve("cli_" + c.cli() + "-platform_" + c.platform());
+            if (Files.exists(combTestDir)) {
+                System.out.println("The directory already exists for this combination: " + c);
+                return;
+            }
+            System.out.println("Testing combination: " + c);
             tested.add(c);
-            testCLI(tempDir.resolve("cli_" + c.cli() + "-platform_" + c.platform()), c);
+
+            testCLI(combTestDir, c);
             storage.verified.values().add(c);
             store();
         });
