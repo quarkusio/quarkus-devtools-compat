@@ -21,12 +21,7 @@ import org.zeroturnaround.exec.stream.LogOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -91,7 +86,7 @@ public class CliCompatTest {
     @TestFactory
     @EnabledIfEnvironmentVariable(named = ECOSYSTEM_CI, matches = "true")
     Stream<DynamicTest> testCliSnapshot(@TempDir Path tempDir) throws IOException {
-        final List<String> versions = fetchLatestVersionsFromRegistry();
+        final Collection<String> versions = fetchLatestVersionsFromRegistry();
         return versions.stream()
             .flatMap(v -> testSnapshot(tempDir, versions));
     }
@@ -99,25 +94,25 @@ public class CliCompatTest {
     @TestFactory
     @DisabledIfEnvironmentVariable(named = ECOSYSTEM_CI, matches = "true")
     Stream<DynamicTest> testCliReleases(@TempDir Path tempDir) throws IOException {
-        final List<String> versions = fetchAllVersionsFromRegistry();
+        final Collection<String> versions = fetchAllVersionsFromRegistry();
         return versions.stream()
-            .flatMap(v -> testVersions(tempDir, versions))
+            .flatMap(v -> testVersions(tempDir, List.copyOf(versions)))
             .limit(storage.testFailed.values().size() + 10);
     }
 
-    private static List<String> extractLatestVersions(JsonObject o) {
+    private static Set<String> extractLatestVersions(JsonObject o) {
         return o.getJsonArray("platforms").stream()
             .map(m -> (JsonObject) m)
             .flatMap(j -> j.getJsonArray("streams").stream())
             .map(m -> (JsonObject) m)
             .map(j -> j.getJsonArray("releases").getJsonObject(0))
             .map(j -> j.getString("version"))
-            .collect(Collectors.toList());
+            .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    private static List<String> extractVersions(JsonObject o) {
+    private static Set<String> extractVersions(JsonObject o) {
         if(o == null) {
-            return List.of();
+            return Set.of();
         }
         return o.getJsonArray("platforms").stream()
             .map(m -> (JsonObject) m)
@@ -127,10 +122,10 @@ public class CliCompatTest {
             .map(m -> (JsonObject) m)
             .map(j -> j.getString("version"))
             .filter(v -> v.contains("Final") || v.matches("\\d+\\.\\d+\\.\\d+"))
-            .collect(Collectors.toList());
+            .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    private Stream<DynamicTest> testSnapshot(Path tempDir, List<String> allVersions) {
+    private Stream<DynamicTest> testSnapshot(Path tempDir, Collection<String> allVersions) {
         List<String> allVersionAndSnapshot = new ArrayList<>(allVersions);
         allVersionAndSnapshot.add(SNAPSHOT_VERSION);
         return Generator.cartesianProduct(List.of(SNAPSHOT_VERSION), allVersionAndSnapshot).stream()
@@ -236,7 +231,7 @@ public class CliCompatTest {
 
     }
 
-    private List<String> fetchLatestVersionsFromRegistry() {
+    private Collection<String> fetchLatestVersionsFromRegistry() {
         return client.getAbs(REGISTRY_VERSIONS_URL)
             .send()
             .onItem().transform(HttpResponse::bodyAsJsonObject)
@@ -244,7 +239,7 @@ public class CliCompatTest {
             .await().indefinitely();
     }
 
-    private List<String> fetchAllVersionsFromRegistry() {
+    private Collection<String> fetchAllVersionsFromRegistry() {
         return client.getAbs(REGISTRY_VERSIONS_URL)
             .send()
             .onItem().transform(HttpResponse::bodyAsJsonObject)
