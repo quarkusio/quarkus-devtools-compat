@@ -36921,6 +36921,9 @@
     "cli" : "2.12.2.Final",
     "platform" : "2.16.9.Final"
   }, {
+    "cli" : "2.11.1.Final",
+    "platform" : "3.12.3"
+  }, {
     "cli" : "2.4.1.Final",
     "platform" : "2.1.1.Final"
   }, {
