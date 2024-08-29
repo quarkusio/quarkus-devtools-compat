@@ -7563,6 +7563,9 @@
     "cli" : "3.6.5",
     "platform" : "2.7.1.Final"
   }, {
+    "cli" : "2.11.1.Final",
+    "platform" : "3.8.6"
+  }, {
     "cli" : "2.9.2.Final",
     "platform" : "2.4.0.Final"
   }, {
@@ -42923,6 +42926,9 @@
   }, {
     "cli" : "2.8.2.Final",
     "platform" : "2.6.1.Final"
+  }, {
+    "cli" : "2.11.2.Final",
+    "platform" : "3.8.6"
   }, {
     "cli" : "2.11.2.Final",
     "platform" : "3.8.5"
