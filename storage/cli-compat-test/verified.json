@@ -5379,6 +5379,9 @@
     "cli" : "2.8.2.Final",
     "platform" : "2.7.1.Final"
   }, {
+    "cli" : "2.11.2.Final",
+    "platform" : "3.17.3"
+  }, {
     "cli" : "3.0.4.Final",
     "platform" : "2.14.1.Final"
   }, {
@@ -39704,6 +39707,9 @@
   }, {
     "cli" : "3.11.2",
     "platform" : "3.6.7"
+  }, {
+    "cli" : "2.11.1.Final",
+    "platform" : "3.17.3"
   }, {
     "cli" : "3.4.3",
     "platform" : "2.15.1.Final"
