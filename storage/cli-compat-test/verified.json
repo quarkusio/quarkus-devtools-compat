@@ -6981,6 +6981,9 @@
     "cli" : "2.7.7.Final",
     "platform" : "2.7.3.Final"
   }, {
+    "cli" : "3.10.0",
+    "platform" : "3.17.4"
+  }, {
     "cli" : "2.1.0.Final",
     "platform" : "2.13.3.Final"
   }, {
@@ -7058,6 +7061,9 @@
   }, {
     "cli" : "3.10.1",
     "platform" : "3.17.3"
+  }, {
+    "cli" : "3.10.1",
+    "platform" : "3.17.4"
   }, {
     "cli" : "3.2.1.Final",
     "platform" : "2.12.1.Final"
@@ -8012,6 +8018,9 @@
   }, {
     "cli" : "2.12.1.Final",
     "platform" : "3.6.8"
+  }, {
+    "cli" : "3.10.2",
+    "platform" : "3.17.4"
   }, {
     "cli" : "2.12.1.Final",
     "platform" : "3.6.9"
@@ -14445,6 +14454,9 @@
     "cli" : "3.11.0",
     "platform" : "3.17.3"
   }, {
+    "cli" : "3.11.0",
+    "platform" : "3.17.4"
+  }, {
     "cli" : "2.14.2.Final",
     "platform" : "2.5.4.Final"
   }, {
@@ -27387,6 +27399,9 @@
     "cli" : "3.8.4",
     "platform" : "3.17.3"
   }, {
+    "cli" : "3.8.4",
+    "platform" : "3.17.4"
+  }, {
     "cli" : "3.8.3",
     "platform" : "2.11.3.Final"
   }, {
@@ -31332,6 +31347,9 @@
     "cli" : "3.8.5",
     "platform" : "3.17.3"
   }, {
+    "cli" : "3.8.5",
+    "platform" : "3.17.4"
+  }, {
     "cli" : "2.1.1.Final",
     "platform" : "2.9.2.Final"
   }, {
@@ -31397,6 +31415,9 @@
   }, {
     "cli" : "3.8.6",
     "platform" : "3.17.3"
+  }, {
+    "cli" : "3.8.6",
+    "platform" : "3.17.4"
   }, {
     "cli" : "2.8.1.Final",
     "platform" : "2.7.7.Final"
@@ -39534,6 +39555,9 @@
     "cli" : "3.9.1",
     "platform" : "3.17.3"
   }, {
+    "cli" : "3.9.1",
+    "platform" : "3.17.4"
+  }, {
     "cli" : "3.2.5.Final",
     "platform" : "2.14.1.Final"
   }, {
@@ -43302,6 +43326,9 @@
     "cli" : "3.4.2",
     "platform" : "3.4.1"
   }, {
+    "cli" : "3.9.4",
+    "platform" : "3.17.4"
+  }, {
     "cli" : "3.5.2",
     "platform" : "3.0.2.Final"
   }, {
@@ -43382,6 +43409,9 @@
   }, {
     "cli" : "3.6.6",
     "platform" : "2.14.0.Final"
+  }, {
+    "cli" : "3.9.5",
+    "platform" : "3.17.4"
   }, {
     "cli" : "3.5.1",
     "platform" : "3.0.2.Final"
@@ -43464,6 +43494,9 @@
     "cli" : "3.9.2",
     "platform" : "3.17.3"
   }, {
+    "cli" : "3.9.2",
+    "platform" : "3.17.4"
+  }, {
     "cli" : "3.2.8.Final",
     "platform" : "2.16.11.Final"
   }, {
@@ -43520,6 +43553,9 @@
   }, {
     "cli" : "2.13.6.Final",
     "platform" : "2.13.7.Final"
+  }, {
+    "cli" : "3.9.3",
+    "platform" : "3.17.4"
   }, {
     "cli" : "3.5.3",
     "platform" : "3.0.2.Final"
