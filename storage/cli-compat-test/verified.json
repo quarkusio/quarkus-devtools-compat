@@ -1890,6 +1890,9 @@
     "cli" : "3.2.2.Final",
     "platform" : "3.12.3"
   }, {
+    "cli" : "3.17.5",
+    "platform" : "3.8.6"
+  }, {
     "cli" : "2.14.0.Final",
     "platform" : "2.13.1.Final"
   }, {
@@ -36228,6 +36231,9 @@
     "cli" : "3.16.2",
     "platform" : "3.6.3"
   }, {
+    "cli" : "3.17.5",
+    "platform" : "3.9.5"
+  }, {
     "cli" : "3.6.2",
     "platform" : "2.10.4.Final"
   }, {
@@ -36236,6 +36242,9 @@
   }, {
     "cli" : "3.16.2",
     "platform" : "3.6.4"
+  }, {
+    "cli" : "3.17.5",
+    "platform" : "3.9.4"
   }, {
     "cli" : "3.2.2.Final",
     "platform" : "3.9.1"
@@ -36273,6 +36282,9 @@
     "cli" : "3.6.7",
     "platform" : "3.13.0"
   }, {
+    "cli" : "3.17.5",
+    "platform" : "3.9.1"
+  }, {
     "cli" : "3.3.1",
     "platform" : "2.4.1.Final"
   }, {
@@ -36282,11 +36294,17 @@
     "cli" : "3.16.2",
     "platform" : "3.6.1"
   }, {
+    "cli" : "3.17.5",
+    "platform" : "3.9.3"
+  }, {
     "cli" : "3.3.1",
     "platform" : "2.9.2.Final"
   }, {
     "cli" : "3.16.2",
     "platform" : "3.6.2"
+  }, {
+    "cli" : "3.17.5",
+    "platform" : "3.9.2"
   }, {
     "cli" : "2.1.0.Final",
     "platform" : "2.8.1.Final"
@@ -59718,11 +59736,20 @@
     "cli" : "3.0.3.Final",
     "platform" : "3.17.3"
   }, {
+    "cli" : "3.17.5",
+    "platform" : "3.11.2"
+  }, {
     "cli" : "3.0.3.Final",
     "platform" : "3.17.4"
   }, {
+    "cli" : "3.17.5",
+    "platform" : "3.11.1"
+  }, {
     "cli" : "2.2.5.Final",
     "platform" : "2.2.1.Final"
+  }, {
+    "cli" : "3.17.5",
+    "platform" : "3.11.0"
   }, {
     "cli" : "3.11.1",
     "platform" : "2.11.3.Final"
@@ -70296,11 +70323,20 @@
     "cli" : "3.6.3",
     "platform" : "2.1.2.Final"
   }, {
+    "cli" : "3.17.5",
+    "platform" : "3.10.2"
+  }, {
     "cli" : "2.10.2.Final",
     "platform" : "2.7.1.Final"
   }, {
+    "cli" : "3.17.5",
+    "platform" : "3.10.1"
+  }, {
     "cli" : "2.8.1.Final",
     "platform" : "2.14.0.Final"
+  }, {
+    "cli" : "3.17.5",
+    "platform" : "3.10.0"
   }, {
     "cli" : "3.5.3",
     "platform" : "2.5.4.Final"
