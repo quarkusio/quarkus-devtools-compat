@@ -22827,6 +22827,9 @@
     "cli" : "3.17.6",
     "platform" : "3.19.1"
   }, {
+    "cli" : "3.21.1",
+    "platform" : "3.2.12.Final"
+  }, {
     "cli" : "3.1.0.Final",
     "platform" : "3.3.0"
   }, {
@@ -38142,6 +38145,9 @@
     "cli" : "2.7.1.Final",
     "platform" : "2.2.3.Final"
   }, {
+    "cli" : "3.21.1",
+    "platform" : "3.5.0"
+  }, {
     "cli" : "3.17.0",
     "platform" : "2.8.0.Final"
   }, {
@@ -38223,8 +38229,14 @@
     "cli" : "2.16.11.Final",
     "platform" : "3.5.2"
   }, {
+    "cli" : "3.21.1",
+    "platform" : "3.5.1"
+  }, {
     "cli" : "2.16.11.Final",
     "platform" : "3.5.1"
+  }, {
+    "cli" : "3.21.1",
+    "platform" : "3.5.2"
   }, {
     "cli" : "3.21.1",
     "platform" : "3.5.3"
@@ -39534,6 +39546,9 @@
     "cli" : "2.7.2.Final",
     "platform" : "2.7.6.Final"
   }, {
+    "cli" : "3.21.1",
+    "platform" : "3.4.1"
+  }, {
     "cli" : "2.16.3.Final",
     "platform" : "3.2.3.Final"
   }, {
@@ -39606,8 +39621,14 @@
     "cli" : "2.16.11.Final",
     "platform" : "3.4.3"
   }, {
+    "cli" : "3.21.1",
+    "platform" : "3.4.2"
+  }, {
     "cli" : "2.16.11.Final",
     "platform" : "3.4.2"
+  }, {
+    "cli" : "3.21.1",
+    "platform" : "3.4.3"
   }, {
     "cli" : "2.16.12.Final",
     "platform" : "2.13.3.Final"
@@ -41040,8 +41061,17 @@
     "cli" : "2.6.2.Final",
     "platform" : "2.7.7.Final"
   }, {
+    "cli" : "3.21.1",
+    "platform" : "3.3.0"
+  }, {
+    "cli" : "3.21.1",
+    "platform" : "3.3.1"
+  }, {
     "cli" : "3.1.0.Final",
     "platform" : "2.10.4.Final"
+  }, {
+    "cli" : "3.21.1",
+    "platform" : "3.3.2"
   }, {
     "cli" : "3.6.0",
     "platform" : "2.10.0.Final"
@@ -41102,6 +41132,9 @@
   }, {
     "cli" : "2.16.2.Final",
     "platform" : "3.16.4"
+  }, {
+    "cli" : "3.21.1",
+    "platform" : "3.3.3"
   }, {
     "cli" : "3.12.1",
     "platform" : "2.13.1.Final"
@@ -68345,6 +68378,9 @@
   }, {
     "cli" : "2.13.9.Final",
     "platform" : "2.9.1.Final"
+  }, {
+    "cli" : "3.21.1",
+    "platform" : "3.2.11.Final"
   }, {
     "cli" : "2.11.1.Final",
     "platform" : "3.17.0"
