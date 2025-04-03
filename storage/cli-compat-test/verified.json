@@ -11745,6 +11745,9 @@
     "cli" : "2.11.1.Final",
     "platform" : "3.21.0"
   }, {
+    "cli" : "2.11.1.Final",
+    "platform" : "3.21.1"
+  }, {
     "cli" : "2.4.0.Final",
     "platform" : "2.10.2.Final"
   }, {
@@ -81020,6 +81023,9 @@
   }, {
     "cli" : "2.11.2.Final",
     "platform" : "3.21.0"
+  }, {
+    "cli" : "2.11.2.Final",
+    "platform" : "3.21.1"
   }, {
     "cli" : "3.19.3",
     "platform" : "3.0.1.Final"
