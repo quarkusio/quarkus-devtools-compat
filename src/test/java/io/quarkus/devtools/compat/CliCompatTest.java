@@ -21,6 +21,7 @@ import org.zeroturnaround.exec.stream.LogOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -86,7 +87,7 @@ public class CliCompatTest {
     @TestFactory
     @EnabledIfEnvironmentVariable(named = ECOSYSTEM_CI, matches = "true")
     Stream<DynamicTest> testCliSnapshot(@TempDir Path tempDir) throws IOException {
-        final Collection<String> versions = fetchLatestVersionsFromRegistry();
+        final Collection<String> versions = pickOldestLatestAndRandom(fetchLatestVersionsFromRegistry(), 3);
         return versions.stream()
             .flatMap(v -> testSnapshot(tempDir, versions));
     }
@@ -238,6 +239,41 @@ public class CliCompatTest {
             .onItem().transform(CliCompatTest::extractLatestVersions)
             .await().indefinitely();
     }
+
+
+    private List<String> pickOldestLatestAndRandom(Collection<String> versions, int randomCount) {
+        // 1. Sort descending (latest first)
+        List<String> sorted = new ArrayList<>(versions);
+        sorted.sort(Comparator.reverseOrder());
+
+        // 2. Group by major
+        Map<String, List<String>> byMajor = new LinkedHashMap<>();
+        for (String v : sorted) {
+            String major = v.substring(0, v.indexOf('.'));
+            byMajor.computeIfAbsent(major, m -> new ArrayList<>()).add(v);
+        }
+
+        // 3. For each major: pick latest (first) and oldest (last)
+        LinkedHashSet<String> selected = new LinkedHashSet<>();
+        for (List<String> list : byMajor.values()) {
+            selected.add(list.get(0));                            // latest of major
+            selected.add(list.get(list.size() - 1));              // oldest of major
+        }
+
+        // 4. Build the pool of remaining candidates
+        List<String> remaining = sorted.stream()
+                .filter(v -> !selected.contains(v))
+                .toList();
+
+        // 5. Deterministic random selection based on today's date
+        Random rnd = new Random(LocalDate.now().toString().hashCode());
+        for (int i = 0; i < randomCount && i < remaining.size(); i++) {
+            selected.add(remaining.get(rnd.nextInt(remaining.size())));
+        }
+
+        return new ArrayList<>(selected);
+    }
+
 
     private Collection<String> fetchAllVersionsFromRegistry() {
         return client.getAbs(REGISTRY_VERSIONS_URL)
