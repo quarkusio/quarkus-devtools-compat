@@ -32,6 +32,7 @@ import static io.quarkus.devtools.compat.TestUtils.isEcosystemCI;
 import static io.quarkus.devtools.compat.TestUtils.readStorageCombinations;
 import static java.util.function.Predicate.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.matchesPattern;
@@ -174,9 +175,10 @@ public class CliCompatTest {
         trustQuarkusRepo(tempDir);
         String appName = "qs-" + combination.cli().replace(".", "_");
         String repoDir =  Objects.equals(combination.cli(), SNAPSHOT_VERSION) ? getQuarkusMavenRepoLocal() : MAVEN_CENTRAL_QUARKUS_REPO;
-        String output = jbang(tempDir, "alias", "add", "-f", ".", "--name=" + appName, repoDir + "quarkus-cli/" + combination.cli() + "/quarkus-cli-" + combination.cli() + "-runner.jar");
+        jbang(tempDir, "alias", "add", "-f", ".", "--name=" + appName, repoDir + "quarkus-cli/" + combination.cli() + "/quarkus-cli-" + combination.cli() + "-runner.jar");
+        String catalog = jbang(tempDir, "alias", "list");
         final String platformGroup =  Objects.equals(combination.platform(), SNAPSHOT_VERSION) ? "io.quarkus" : "io.quarkus.platform";
-        assertThat(output, matchesPattern(".jbang. Alias .* added .*\n"));
+        assertThat(catalog, containsString(appName));
         List<String> commands = List.of(appName, "create", "app", "-P="+platformGroup + "::" + combination.platform(), "demoapp");
         propagateSystemPropertyIfSet("maven.repo.local", commands);
         String createResult = jbang(tempDir, commands);
@@ -201,8 +203,9 @@ public class CliCompatTest {
 
     static void trustQuarkusRepo(Path tempDir) throws IOException, InterruptedException, TimeoutException {
         if (!quarkusRepoTrusted) {
-            String trust = jbang(tempDir, "trust", "add", MAVEN_CENTRAL_QUARKUS_REPO);
-            assertThat(trust, matchesPattern("(?s).*Adding ." + MAVEN_CENTRAL_QUARKUS_REPO + ". to .*/trusted-sources.json.*"));
+            jbang(tempDir, "trust", "add", MAVEN_CENTRAL_QUARKUS_REPO);
+            String trustedSources = jbang(tempDir, "trust", "list");
+            assertThat(trustedSources, containsString(MAVEN_CENTRAL_QUARKUS_REPO));
             quarkusRepoTrusted = true;
         }
     }
