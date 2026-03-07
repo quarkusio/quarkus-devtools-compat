@@ -3954,6 +3954,9 @@
     "cli" : "2.13.1.Final",
     "platform" : "3.3.3"
   }, {
+    "cli" : "3.30.8",
+    "platform" : "3.32.2"
+  }, {
     "cli" : "3.18.3",
     "platform" : "3.9.2"
   }, {
@@ -3986,6 +3989,9 @@
   }, {
     "cli" : "3.18.4",
     "platform" : "3.9.1"
+  }, {
+    "cli" : "3.30.7",
+    "platform" : "3.32.2"
   }, {
     "cli" : "3.18.4",
     "platform" : "3.9.3"
@@ -36480,6 +36486,9 @@
     "cli" : "3.31.1",
     "platform" : "3.3.3"
   }, {
+    "cli" : "3.30.7",
+    "platform" : "3.2.11.Final"
+  }, {
     "cli" : "2.10.3.Final",
     "platform" : "2.1.2.Final"
   }, {
@@ -50838,6 +50847,9 @@
     "cli" : "3.32.1",
     "platform" : "3.22.2"
   }, {
+    "cli" : "3.31.1",
+    "platform" : "3.32.2"
+  }, {
     "cli" : "3.2.6.Final",
     "platform" : "2.6.2.Final"
   }, {
@@ -56018,6 +56030,18 @@
   }, {
     "cli" : "2.2.2.Final",
     "platform" : "2.16.1.Final"
+  }, {
+    "cli" : "3.30.7",
+    "platform" : "3.3.3"
+  }, {
+    "cli" : "3.30.7",
+    "platform" : "3.3.1"
+  }, {
+    "cli" : "3.30.7",
+    "platform" : "3.3.2"
+  }, {
+    "cli" : "3.30.7",
+    "platform" : "3.3.0"
   }, {
     "cli" : "2.16.10.Final",
     "platform" : "3.19.1"
@@ -66426,6 +66450,9 @@
     "cli" : "3.8.2",
     "platform" : "2.7.5.Final"
   }, {
+    "cli" : "3.30.7",
+    "platform" : "3.2.9.Final"
+  }, {
     "cli" : "3.11.0",
     "platform" : "3.12.0"
   }, {
@@ -72437,6 +72464,9 @@
   }, {
     "cli" : "3.10.1",
     "platform" : "2.16.11.Final"
+  }, {
+    "cli" : "3.30.7",
+    "platform" : "3.2.8.Final"
   }, {
     "cli" : "3.2.9.Final",
     "platform" : "3.2.1.Final"
@@ -88533,6 +88563,9 @@
     "cli" : "3.31.2",
     "platform" : "3.14.1"
   }, {
+    "cli" : "3.30.7",
+    "platform" : "3.2.10.Final"
+  }, {
     "cli" : "3.31.2",
     "platform" : "3.14.2"
   }, {
@@ -95303,6 +95336,9 @@
   }, {
     "cli" : "2.16.4.Final",
     "platform" : "2.5.1.Final"
+  }, {
+    "cli" : "3.30.7",
+    "platform" : "3.2.12.Final"
   }, {
     "cli" : "2.13.5.Final",
     "platform" : "3.10.0"
