@@ -26,7 +26,7 @@ jobs:
 
     steps:
       - name: Install yq
-        uses: dcarbone/install-yq-action@4075b4dca348d74bd83f2bf82d30f25d7c54539b # v1.3.1
+        run: sudo snap install yq
 
       - name: Set up Java
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
