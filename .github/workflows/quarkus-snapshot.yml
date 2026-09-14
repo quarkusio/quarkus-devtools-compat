@@ -26,20 +26,21 @@ jobs:
 
     steps:
       - name: Install yq
-        uses: dcarbone/install-yq-action@v1.0.1
+        uses: dcarbone/install-yq-action@4075b4dca348d74bd83f2bf82d30f25d7c54539b # v1.3.1
 
       - name: Set up Java
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
+          distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
 
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: current-repo
 
       - name: Checkout Ecosystem
-        uses: actions/checkout@v2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: ${{ env.ECOSYSTEM_CI_REPO }}
           path: ecosystem-ci
