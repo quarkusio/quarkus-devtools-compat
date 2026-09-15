@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 set -e
 
-ECOSYSTEM_CI=true mvn -B test
+ECOSYSTEM_CI=true mvn -B test -Dquarkus.snapshot.version=${QUARKUS_VERSION}

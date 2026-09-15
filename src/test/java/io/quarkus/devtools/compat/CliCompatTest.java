@@ -44,7 +44,7 @@ public class CliCompatTest {
     private static final String VERIFIED = "cli-compat-test/verified.json";
     private static final String TEST_FAILED = "cli-compat-test/test-failed.json";
 
-    private static final String SNAPSHOT_VERSION = "999-SNAPSHOT";
+    private static final String SNAPSHOT_VERSION = System.getProperty("quarkus.snapshot.version", "999-SNAPSHOT");
     private static final String MAVEN_CENTRAL_QUARKUS_REPO = "https://repo1.maven.org/maven2/io/quarkus/";
     private static final String REGISTRY_VERSIONS_URL = "https://registry.quarkus.io/client/platforms/all";
     private static WebClient client = WebClient.create(Vertx.vertx());
