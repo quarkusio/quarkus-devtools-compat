@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -231,7 +232,8 @@ public class CliCompatTest {
             .directory(workingDir.toFile())
             .redirectOutputAlsoTo(System.out)
             .exitValue(0)
-            .readOutput(true);
+            .readOutput(true)
+            .timeout(5, TimeUnit.MINUTES);
 
     }
 
