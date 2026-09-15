@@ -22,9 +22,6 @@ jobs:
     if: github.actor == 'quarkusbot' || github.event_name == 'workflow_dispatch' || github.actor == 'ia3andy'
 
     steps:
-      - name: Install yq
-        run: sudo snap install yq
-
       - name: Set up Java
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
