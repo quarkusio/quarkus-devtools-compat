@@ -12,9 +12,10 @@ import java.util.Set;
  */
 public final class BrokenVersion {
 
+    public static final ArtifactVersion VERSION_2_11 = new DefaultArtifactVersion("2.11");
     public static final ArtifactVersion VERSION_3_0 = new DefaultArtifactVersion("3.0");
     public static final ArtifactVersion VERSION_3_5 = new DefaultArtifactVersion("3.5");
-    public static final ArtifactVersion VERSION_2_11 = new DefaultArtifactVersion("2.11");
+    public static final ArtifactVersion VERSION_4_0 = new DefaultArtifactVersion("4.0");
     private static final Set<String> BROKEN_CLI_VERSION = Set.of(
             // See https://github.com/quarkusio/quarkus-devtools-compat/issues/4
             "2.6.0.Final",
@@ -35,6 +36,12 @@ public final class BrokenVersion {
 
         // Old CLIs (below 3.5) hang when resolving SNAPSHOT platform versions from the local repo
         if(c.platform().contains("SNAPSHOT") && cliVersion.compareTo(VERSION_3_5) < 0) {
+            return true;
+        }
+
+        // 3.x CLIs are not compatible with Quarkus 4 (999-SNAPSHOT): quarkus-junit5 was renamed
+        // https://github.com/quarkusio/quarkus/issues/56786
+        if("999-SNAPSHOT".equals(c.platform()) && cliVersion.compareTo(VERSION_4_0) < 0) {
             return true;
         }
 
