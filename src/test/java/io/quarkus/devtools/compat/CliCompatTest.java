@@ -185,9 +185,11 @@ public class CliCompatTest {
         String createResult = jbang(tempDir, commands);
 
         assertThat(tempDir.toFile(), aFileWithSize(greaterThan(1L)));
-        List<String> mvnCommands = List.of("mvn", "clean", "package");
+        Path demoappDir = tempDir.resolve("demoapp");
+        String mvnCmd = Files.exists(demoappDir.resolve("mvnw")) ? "./mvnw" : "mvn";
+        List<String> mvnCommands = List.of(mvnCmd, "clean", "package");
         propagateSystemPropertyIfSet("maven.repo.local", mvnCommands);
-        int result = run(tempDir.resolve("demoapp"), mvnCommands)
+        int result = run(demoappDir, mvnCommands)
             .redirectOutputAlsoTo(new LogOutputStream() {
                 @Override
                 protected void processLine(String s) {
